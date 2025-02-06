@@ -1,2 +1,2 @@
 # ZenCure
-AI-Powered Eastern Medicine Recommendation WebApp 
+AI-Powered Naturopathic WebApp 
