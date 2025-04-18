@@ -1,0 +1,214 @@
+# Setting Up the ZenCure Frontend
+
+Follow these steps to set up the React Native frontend for the ZenCure application.
+
+## Step 1: Install Expo CLI
+
+```bash
+npm install -g expo-cli
+```
+
+## Step 2: Create a New Expo Project
+
+```bash
+npx create-expo-app front --template
+```
+
+Select the TypeScript template when prompted.
+
+## Step 3: Navigate to the Project Directory
+
+```bash
+cd front
+```
+
+## Step 4: Install Required Dependencies
+
+```bash
+npm install @react-navigation/native @react-navigation/stack @react-navigation/bottom-tabs
+npm install react-native-gesture-handler react-native-safe-area-context react-native-screens
+npm install axios react-query secure-store
+npm install twrnc  # Tailwind CSS for React Native
+npm install react-hook-form @hookform/resolvers yup
+npm install @reduxjs/toolkit react-redux
+npm install react-native-dotenv
+npm install expo-font
+npm install expo-secure-store
+```
+
+## Step 5: Create Basic Project Structure
+
+```bash
+mkdir -p src/components/common
+mkdir -p src/components/auth
+mkdir -p src/components/remedies
+mkdir -p src/components/reviews
+mkdir -p src/components/profile
+mkdir -p src/screens
+mkdir -p src/navigation
+mkdir -p src/services
+mkdir -p src/hooks
+mkdir -p src/styles
+mkdir -p src/utils
+mkdir -p src/context
+mkdir -p src/assets/images
+mkdir -p src/assets/fonts
+```
+
+## Step 6: Configure Tailwind CSS
+
+Create a `tailwind.config.js` file in the project root:
+
+```javascript
+module.exports = {
+  content: ['./App.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          light: '#60A5FA',
+          DEFAULT: '#3B82F6',
+          dark: '#2563EB',
+        },
+        secondary: {
+          light: '#10B981',
+          DEFAULT: '#059669',
+          dark: '#047857',
+        },
+        background: {
+          light: '#F9FAFB',
+          DEFAULT: '#F3F4F6',
+          dark: '#E5E7EB',
+        },
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+Create a `src/styles/tailwind.ts` file:
+
+```typescript
+import { create } from 'twrnc';
+
+// create the customized version...
+const tw = create(require('../../tailwind.config.js'));
+
+export default tw;
+```
+
+## Step 7: Set Up TypeScript Configuration
+
+Update your `tsconfig.json` file with enhanced settings:
+
+```json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+## Step 8: Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```
+API_URL=http://192.168.1.x:5000/api
+```
+
+Replace the IP address with your local machine's IP address.
+
+Create a `src/config/env.ts` file:
+
+```typescript
+import Constants from 'expo-constants';
+
+const ENV = {
+  dev: {
+    apiUrl: 'http://192.168.1.x:5000/api',
+  },
+  staging: {
+    apiUrl: 'https://staging-api.zencure.com/api',
+  },
+  prod: {
+    apiUrl: 'https://api.zencure.com/api',
+  },
+};
+
+const getEnvVars = (env = Constants.manifest?.releaseChannel) => {
+  if (env === 'staging') {
+    return ENV.staging;
+  } else if (env === 'prod') {
+    return ENV.prod;
+  } else {
+    return ENV.dev;
+  }
+};
+
+export default getEnvVars();
+```
+
+## Step 9: Set Up API Service
+
+Create a `src/services/api.ts` file:
+
+```typescript
+import axios from 'axios';
+import env from '../config/env';
+import * as SecureStore from 'expo-secure-store';
+
+const API_URL = env.apiUrl;
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add a request interceptor to add auth token
+api.interceptors.request.use(
+  async (config) => {
+    const token = await SecureStore.getItemAsync('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor for error handling
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Handle token expiration
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      // Clear stored tokens on auth error
+      await SecureStore.deleteItemAsync('authToken');
+      
+      // You could redirect to login screen here
+      // or attempt to refresh token if you implement that feature
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+```
