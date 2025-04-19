@@ -138,9 +138,18 @@ export interface User {
     Search: undefined;
     CreateReview: { remedyId: string };
   };
-  
+
   export type BottomTabParamList = {
     Home: undefined;
     Search: undefined;
     Profile: undefined;
+    Admin?: undefined;
   };
+  
+  // Admin Navigation Types
+export type AdminStackParamList = {
+  AdminDashboard: undefined;
+  AdminUserManagement: undefined;
+  AdminCreateRemedy: undefined;
+  AdminCreateSource: undefined;
+};

@@ -1,4 +1,4 @@
-// src/navigation/index.tsx
+// src/navigation/index.tsx - Add admin screens to the navigation
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -16,14 +16,61 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import SearchScreen from '../screens/home/SearchScreen';
 import CreateReviewScreen from '../screens/remedies/CreateReviewScreen';
 
+// Import admin screens
+import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
+import AdminUserManagementScreen from '../screens/admin/AdminUserManagementScreen';
+import AdminCreateRemedyScreen from '../screens/admin/AdminCreateRemedyScreen';
+import AdminCreateSourceScreen from '../screens/admin/AdminCreateSourceScreen';
+
 // Import store and types
 import { useAuthStore } from '../store/authStore';
-import { RootStackParamList, BottomTabParamList } from '../types';
+import { RootStackParamList, BottomTabParamList, AdminStackParamList } from '../types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
+const AdminStack = createNativeStackNavigator<AdminStackParamList>();
+
+function AdminStackNavigator() {
+  return (
+    <AdminStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#4CAF50',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}
+    >
+      <AdminStack.Screen
+        name="AdminDashboard"
+        component={AdminDashboardScreen}
+        options={{ title: 'Admin Dashboard' }}
+      />
+      <AdminStack.Screen
+        name="AdminUserManagement"
+        component={AdminUserManagementScreen}
+        options={{ title: 'User Management' }}
+      />
+      <AdminStack.Screen
+        name="AdminCreateRemedy"
+        component={AdminCreateRemedyScreen}
+        options={{ title: 'Add New Remedy' }}
+      />
+      <AdminStack.Screen
+        name="AdminCreateSource"
+        component={AdminCreateSourceScreen}
+        options={{ title: 'Add New Source' }}
+      />
+    </AdminStack.Navigator>
+  );
+}
 
 function HomeTabs() {
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === 'admin';
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -36,6 +83,8 @@ function HomeTabs() {
             iconName = focused ? 'search' : 'search-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'Admin') {
+            iconName = focused ? 'shield' : 'shield-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -59,6 +108,16 @@ function HomeTabs() {
         component={ProfileScreen} 
         options={{ title: 'My Profile' }}
       />
+      {isAdmin && (
+        <Tab.Screen 
+          name="Admin" 
+          component={AdminStackNavigator} 
+          options={{ 
+            title: 'Admin',
+            headerShown: false,
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 }

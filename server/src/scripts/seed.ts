@@ -1,7 +1,7 @@
 // server/src/seed.ts
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { Remedy, Source } from './models';
+import { Remedy, Source } from '../models';
 
 dotenv.config();
 
