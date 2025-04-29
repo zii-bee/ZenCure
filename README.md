@@ -160,7 +160,7 @@ The core algorithm for matching symptoms to remedies is implemented in the `quer
 
 ## Project Roadmap
 1. ✅ Complete backend API implementation
-2. ⬜ Develop React Native frontend with Expo
+2. ✅ Develop React Native frontend with Expo
 3. ⬜ Implement advanced recommendation algorithms
-4. ⬜ Add content moderation system
+4. ✅ Add content moderation system
 5. ⬜ Deploy to production
