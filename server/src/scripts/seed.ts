@@ -202,7 +202,7 @@ const seedDatabase = async () => {
 
     console.log('Created sources:', sources.length);
 
-    // 4️⃣ Create remedies referencing those sources
+    // create remedies referencing those sources
     const remedies = await Remedy.create([
       {
         name: 'Ginger Root',
@@ -568,7 +568,7 @@ const seedDatabase = async () => {
 
     console.log('Created remedies:', remedies.length);
 
-    // 5️⃣ Update each source with its remedyIds
+    // update each source with its remedyIds
     for (const source of sources) {
       const relatedRemedies = remedies.filter(r =>
         r.sourceIds.map(id => id.toString()).includes(source._id as unknown as string)
