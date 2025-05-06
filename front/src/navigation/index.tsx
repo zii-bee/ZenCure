@@ -1,4 +1,3 @@
-// src/navigation/index.tsx - Add admin screens to the navigation
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -21,14 +20,20 @@ import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import AdminUserManagementScreen from '../screens/admin/AdminUserManagementScreen';
 import AdminCreateRemedyScreen from '../screens/admin/AdminCreateRemedyScreen';
 import AdminCreateSourceScreen from '../screens/admin/AdminCreateSourceScreen';
+import AdminReviewManagementScreen from '../screens/admin/AdminReviewManagementScreen';
+import AdminCommentManagementScreen from '../screens/admin/AdminCommentManagementScreen';
+
+// Import moderator screens
+import ModeratorDashboardScreen from '../screens/moderator/ModeratorDashboardScreen';  // New Moderator Dashboard Screen
 
 // Import store and types
 import { useAuthStore } from '../store/authStore';
-import { RootStackParamList, BottomTabParamList, AdminStackParamList } from '../types';
+import { RootStackParamList, BottomTabParamList, AdminStackParamList, ModeratorStackParamList } from '../types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 const AdminStack = createNativeStackNavigator<AdminStackParamList>();
+const ModeratorStack = createNativeStackNavigator<ModeratorStackParamList>()
 
 function AdminStackNavigator() {
   return (
@@ -63,6 +68,49 @@ function AdminStackNavigator() {
         component={AdminCreateSourceScreen}
         options={{ title: 'Add New Source' }}
       />
+      <AdminStack.Screen
+        name="AdminReviewManagement"
+        component={AdminReviewManagementScreen}
+        options={{ title: 'Manage Reviews' }}
+      />
+      <AdminStack.Screen
+        name="AdminCommentManagement"
+        component={AdminCommentManagementScreen}
+        options={{ title: 'Manage Comments' }}
+      />
+    </AdminStack.Navigator>
+  );
+}
+
+function ModeratorStackNavigator() {
+  return (
+    <AdminStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#4CAF50',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}
+    >
+      <ModeratorStack.Screen
+        name="ModeratorDashboard"
+        component={ModeratorDashboardScreen}
+        options={{ title: 'Admin Dashboard' }}
+      />
+
+      <AdminStack.Screen
+        name="AdminReviewManagement"
+        component={AdminReviewManagementScreen}
+        options={{ title: 'Manage Reviews' }}
+      />
+      <AdminStack.Screen
+        name="AdminCommentManagement"
+        component={AdminCommentManagementScreen}
+        options={{ title: 'Manage Comments' }}
+      />
     </AdminStack.Navigator>
   );
 }
@@ -70,6 +118,7 @@ function AdminStackNavigator() {
 function HomeTabs() {
   const { user } = useAuthStore();
   const isAdmin = user?.role === 'admin';
+  const isModerator = user?.role === 'moderator'; // Check if the user is a moderator
 
   return (
     <Tab.Navigator
@@ -85,6 +134,8 @@ function HomeTabs() {
             iconName = focused ? 'person' : 'person-outline';
           } else if (route.name === 'Admin') {
             iconName = focused ? 'shield' : 'shield-outline';
+          } else if (route.name === 'Moderator') {  // Icon for Moderator tab
+            iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -108,6 +159,8 @@ function HomeTabs() {
         component={ProfileScreen} 
         options={{ title: 'My Profile' }}
       />
+
+      {/* Admin Tab - Only visible for admins */}
       {isAdmin && (
         <Tab.Screen 
           name="Admin" 
@@ -115,6 +168,18 @@ function HomeTabs() {
           options={{ 
             title: 'Admin',
             headerShown: false,
+          }}
+        />
+      )}
+
+      {/* Moderator Tab - Only visible for moderators */}
+      {isModerator && (
+        <Tab.Screen 
+          name="Moderator" 
+          component={ModeratorStackNavigator}  // The screen for moderators
+          options={{ 
+            title: 'Moderator', 
+            headerShown: false, // Hide the header for this screen
           }}
         />
       )}

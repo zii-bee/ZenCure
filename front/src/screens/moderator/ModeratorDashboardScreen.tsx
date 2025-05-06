@@ -1,0 +1,76 @@
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
+import { ModeratorStackParamList } from '../../types';
+import Card from '../../components/common/Card';
+
+type ModeratorDashboardScreenProps = NativeStackScreenProps<ModeratorStackParamList, 'ModeratorDashboard'>;
+
+const ModeratorDashboardScreen: React.FC<ModeratorDashboardScreenProps> = ({ navigation }) => {
+const moderatorOptions = [
+
+{
+title: 'Review Management',
+description: 'View and manage user reviews',
+icon: 'thumbs-up',
+screen: 'AdminReviewManagement'
+},
+{
+  title: 'Comment Moderation',
+  description: 'View and manage user comments',
+  icon: 'chatbubbles',
+  screen: 'AdminCommentManagement' // Add this screen for Comment Moderation
+}
+];
+
+return (
+  <ScrollView className="flex-1 bg-gray-50">
+    <View className="p-4">
+      <View className="mb-6">
+        <Text className="text-2xl font-bold text-gray-800 mb-2">Moderator Dashboard</Text>
+        <Text className="text-gray-600">Manage ZenCure content</Text>
+      </View>
+
+      {moderatorOptions.map((option, index) => (
+        <TouchableOpacity
+          key={index}
+          onPress={() => navigation.navigate(option.screen as any)}
+          className="mb-4"
+        >
+          <Card>
+            <View className="flex-row items-center">
+              <View className="bg-green-100 p-3 rounded-full mr-4">
+                <Ionicons name={option.icon as any} size={28} color="#4CAF50" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-lg font-bold text-gray-800">{option.title}</Text>
+                <Text className="text-gray-600">{option.description}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#4CAF50" />
+            </View>
+          </Card>
+        </TouchableOpacity>
+      ))}
+
+      <Card className="mt-4 bg-yellow-50">
+        <View className="flex-row items-start">
+          <Ionicons name="information-circle" size={24} color="#F59E0B" style={{ marginRight: 12 }} />
+          <View className="flex-1">
+            <Text className="font-bold text-gray-800 mb-1">Moderator Privileges</Text>
+            <Text className="text-gray-700">
+              As a moderator, you have full access to moderate the platform.
+              Please use these privileges responsibly.
+            </Text>
+          </View>
+        </View>
+      </Card>
+    </View>
+  </ScrollView>
+);
+
+};
+
+export default ModeratorDashboardScreen;
+
+

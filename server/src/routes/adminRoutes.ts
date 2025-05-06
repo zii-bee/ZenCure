@@ -1,3 +1,4 @@
+// src/routes/adminRoutes.ts
 import express, { Request, Response, NextFunction } from 'express';
 import { 
   getAllUsers, 
@@ -5,7 +6,11 @@ import {
   createSource, 
   getUniqueSymptoms,
   updateUserRole,
-  getAllSources
+  getAllSources,
+  getAllReviews,
+  updateReviewStatus,
+  getAllComments,
+  updateCommentStatus
 } from '../controllers/adminController';
 import { auth, authorize } from '../middleware/auth';
 
@@ -22,10 +27,24 @@ const typedGetUniqueSymptoms = getUniqueSymptoms as RequestHandler;
 const typedUpdateUserRole = updateUserRole as RequestHandler;
 const typedGetAllSources = getAllSources as RequestHandler;
 const typedAuth = auth as RequestHandler;
+const typedGetAllReviews = getAllReviews as RequestHandler;
+const typedUpdateReviewStatus = updateReviewStatus as RequestHandler;
+const typedGetAllComments = getAllComments as RequestHandler;
+const typedUpdateCommentStatus = updateCommentStatus as RequestHandler;
 const typedAuthorize = authorize as any;
 
-// all routes require admin role
-router.use(typedAuth, typedAuthorize('admin'));
+router.use(typedAuth);
+
+// Routes related to comments
+router.get('/comments', typedAuthorize('admin', 'moderator'), typedGetAllComments);
+router.put('/comments/status', typedAuthorize('admin', 'moderator'), typedUpdateCommentStatus);
+
+// Routes for reviews, users, remedies, sources, etc.
+router.get('/reviews', typedAuthorize('admin', 'moderator'), typedGetAllReviews);
+router.put('/reviews/status', typedAuthorize('admin', 'moderator'), typedUpdateReviewStatus);
+
+// all below routes require admin role
+router.use(typedAuthorize('admin'));
 
 // users
 router.get('/users', typedGetAllUsers);

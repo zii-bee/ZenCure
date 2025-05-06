@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { Remedy, Source, User } from '../models';
+import { Remedy, Source, User, Review, Comment } from '../models';
+
 
 // Get all users (admin only)
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -198,6 +199,81 @@ export const getAllSources = async (req: Request, res: Response) => {
   try {
     const sources = await Source.find();
     res.json(sources);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllReviews = async (req: Request, res: Response) => {
+  
+  try {
+
+    const { status, remedyId, userId } = req.query;
+    
+    const filter: any = {};
+    if (status) filter.status = status;
+    if (remedyId) filter.remedyId = remedyId;
+    if (userId) filter.userId = userId;
+
+    const reviews = await Review.find(filter)
+      .populate('userId', 'name email')
+      .populate('remedyId', 'name')
+      .sort({ createdAt: -1 });
+
+    res.json(reviews);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Approve or flag a review
+export const updateReviewStatus = async (req: Request, res: Response) => {
+  try {
+    const { reviewId, status } = req.body;
+
+    if (!reviewId || !['approved', 'flagged'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid request' });
+    }
+
+    const review = await Review.findByIdAndUpdate(
+      reviewId,
+      { status },
+      { new: true }
+    );
+
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+
+    res.json({ message: 'Review status updated', review });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllComments = async (req: Request, res: Response) => {
+  try {
+    const comments = await Comment.find().populate('userId').populate('reviewId');
+    res.json(comments);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update comment status
+export const updateCommentStatus = async (
+  req: Request,
+  res: Response
+) => {
+  const { commentId, status } = req.body;
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+    comment.status = status;
+    await comment.save();
+    res.json({ message: 'Comment status updated', comment });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
