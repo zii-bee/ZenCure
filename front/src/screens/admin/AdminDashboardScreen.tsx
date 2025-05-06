@@ -26,6 +26,18 @@ const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navigation 
       description: 'Add a new source reference',
       icon: 'document-text',
       screen: 'AdminCreateSource'
+    },
+    {
+      title: 'Review Management',
+      description: 'View and manage user reviews',
+      icon: 'thumbs-up',
+      screen: 'AdminReviewManagement'
+    },
+    {
+      title: 'Comment Moderation',
+      description: 'View and manage user comments',
+      icon: 'chatbubbles',
+      screen: 'AdminCommentManagement' // Add this screen for Comment Moderation
     }
   ];
 
