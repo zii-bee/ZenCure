@@ -9,10 +9,9 @@ node_modules/
 .env.production.local
 
 coverage/
-jest.setup.js
 build/
 dist/
-
+server\jest.setup.js
 npm-debug.log*
 
 .DS_Store
