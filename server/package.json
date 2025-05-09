@@ -13,7 +13,8 @@
     "test:coverage": "jest --coverage",
     "test:unit": "jest --testPathIgnorePatterns=src/__tests__/integration",
     "test:integration": "jest --testPathPattern=src/__tests__/integration",
-    "test:ci": "jest --ci --coverage"
+    "test:ci": "jest --ci --coverage",
+    "clear-jest": "jest --clearCache"
   },
   "keywords": [],
   "author": "",

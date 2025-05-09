@@ -57,11 +57,18 @@ const connectDB = async () => {
 };
 
 // start server
-const startServer = async () => {
+export const startServer = async () => {
   await connectDB();
   app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`);
   });
+  return app; // Return the app instance for testing
 };
 
-startServer();
+// Only call startServer if this file is being run directly, not when imported
+if (require.main === module) {
+  startServer();
+}
+
+// Export connectDB for testing purposes too
+export { connectDB, app };

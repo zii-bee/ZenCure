@@ -20,10 +20,6 @@ if (!process.env.MONGODB_URI) {
   console.warn('Warning: MONGODB_URI not set in .env.test, using fallback');
 }
 
-if (!process.env.GEMINI_API_KEY) {
-  process.env.GEMINI_API_KEY = 'AIzaSyCge_G8Mnw9LFOQKHZ3obc7aNVtnL6jVp0';
-  console.warn('Warning: GEMINI_API_KEY not set in .env.test, using fallback');
-}
 
 
 // Global Jest setup code can go here
